@@ -68,6 +68,7 @@ body {
         font-size: 0;
         color: var(--primary-color);
     }
+
 }
 
 @media (min-width: 992px) {
@@ -86,6 +87,12 @@ body {
 }
 
 /*LOCAL WEATHER*/
+
+.local-general {
+    display: flex;
+    justify-content: space-between;
+}
+
 .local-city {
     font-size: 25px;
     color: var(--primary-color);
@@ -99,6 +106,7 @@ body {
 
 .local-icon {
     margin-right: 60px;
+    margin-left: 60px;
 }
 
 .local-degrees {
@@ -121,6 +129,18 @@ body {
         height: 120px;
     }
 
+}
+
+@media (max-width: 650px) {
+    .local-general {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .local-icon {
+        margin-left: 0;
+    }
 }
 
 @media (min-width: 992px) {
