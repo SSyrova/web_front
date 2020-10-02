@@ -118,6 +118,7 @@ body {
 @media (min-width: 480px) {
     .local-city {
         font-size: 32px;
+        align-self: center;
     }
 
     .local-degrees {
@@ -136,10 +137,15 @@ body {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        align-items: flex-start;
     }
 
     .local-icon {
         margin-left: 0;
+    }
+
+    .local-city {
+        align-self: flex-start;
     }
 }
 
@@ -165,6 +171,7 @@ body {
     .local-city {
         font-size: 32px;
         margin-bottom: 30px;
+        align-self: flex-start;
     }
 
     .local-icon {
