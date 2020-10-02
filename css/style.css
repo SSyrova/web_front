@@ -19,11 +19,11 @@ body {
     margin: 25px;
 }
 
-@media (min-width: 924px) {
+@media (min-width: 992px) {
     .main {
         padding: 25px;
         margin: 0 auto;
-        width: 924px;
+        width: 992px;
     }
 }
 
@@ -55,13 +55,13 @@ body {
     font-size: 0;
 }
 
-@media (min-width: 426px) {
+@media (min-width: 480px) {
     .refresh-title {
         font-size: 30px;
     }
 }
 
-@media (min-width: 520px) {
+@media (min-width: 650px) {
     .refresh-button {
         width: 40px;
         margin-right: auto;
@@ -70,7 +70,7 @@ body {
     }
 }
 
-@media (min-width: 924px) {
+@media (min-width: 992px) {
     .refresh {
         margin-bottom: 25px;
         display: grid;
@@ -107,7 +107,7 @@ body {
     line-height: 1;
 }
 
-@media (min-width: 426px) {
+@media (min-width: 480px) {
     .local-city {
         font-size: 32px;
     }
@@ -123,7 +123,7 @@ body {
 
 }
 
-@media (min-width: 924px) {
+@media (min-width: 992px) {
     .local {
         display: grid;
         grid-template-columns: auto auto;
@@ -184,7 +184,7 @@ body {
     line-height: 1;
 }
 
-@media (min-width: 426px) {
+@media (min-width: 480px) {
     .details-item {
         padding: 10px;
         margin-bottom: 7px;
@@ -265,13 +265,13 @@ body {
     margin-bottom: 25px;
 }
 
-@media (min-width: 426px) {
+@media (min-width: 480px) {
     .favorites-title {
         font-size: 30px;
     }
 }
 
-@media (min-width: 924px) {
+@media (min-width: 992px) {
     .favorites-header {
         display: flex;
         justify-content: space-between;
@@ -376,7 +376,7 @@ body {
     transform-origin: center;
 }
 
-@media (min-width: 426px) {
+@media (min-width: 480px) {
     .favorite-item-city {
         font-size: 22px;
     }
@@ -391,7 +391,7 @@ body {
     }
 }
 
-@media (min-width: 924px) {
+@media (min-width: 992px) {
     .favorite-item-city {
         font-size: 26px;
     }
