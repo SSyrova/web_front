@@ -113,7 +113,7 @@ function WeatherUpdater() {
                     response.json().then(function (data) {
                         var list = document.getElementById("cities");
                         list.textContent = "";
-                        if (data && data.result) {
+                        if (data && data.results) {
                             for (const item of data.results) {
                                 list.appendChild(_this.createOptionEl(item.country.name, item.name, item.location));
                             }
