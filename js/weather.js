@@ -6,8 +6,6 @@ function WeatherUpdater() {
     _this.GET_WEATHER_ICON = "http://openweathermap.org/img/wn/";
     _this.GET_WEATHER_ICON_POSTFIX = "@4x.png";
     _this.GET_CITIES = "https://parseapi.back4app.com/classes/City?limit=20&keys=name,country.name,location&where=";
-    _this.defaultCity = "Saint-Petersburg";
-    _this.currentCity = null;
     _this.lStorage = window.localStorage;
 
     this.init = function () {
@@ -43,10 +41,6 @@ function WeatherUpdater() {
             lon: arrayPos[1]
         };
         var cities = JSON.parse(_this.lStorage.getItem("cities"));
-        // var idx = cities.indexOf(deleteCity);
-        // if (idx > -1) {
-        //     cities.splice(idx, 1);
-        // }
         for (const it of cities) {
             if (it.lat === deleteCity.lat && it.lon === deleteCity.lon) {
                 cities.splice(cities.indexOf(it), 1);
@@ -78,8 +72,6 @@ function WeatherUpdater() {
                         _this.saveToStorage(weather.coord);
                         _this.fillStoreElement(item, weather);
                         loader.remove();
-                    }, function (weather) {
-
                     });
                     break;
                 }
@@ -121,23 +113,16 @@ function WeatherUpdater() {
                     response.json().then(function (data) {
                         var list = document.getElementById("cities");
                         list.textContent = "";
-                        if (data.results.length < 1) {
-                            var opt = document.createElement("option");
-                            opt.classList.add("disabled");
-                            opt.setAttribute("value", "Не удалось найти город");
-                            list.appendChild(opt);
-                        }
-                        for (const item of data.results) {
-                            list.appendChild(_this.createOptionEl(item.country.name, item.name, item.location));
+                        if (data && data.result) {
+                            for (const item of data.results) {
+                                list.appendChild(_this.createOptionEl(item.country.name, item.name, item.location));
+                            }
                         }
                     });
                 })
                 .catch(function (err) {
 
                 });
-        });
-        input.addEventListener('change', function () {
-            console.log(this);
         });
     };
 
@@ -163,8 +148,6 @@ function WeatherUpdater() {
                 _this.getWeather(city, function (weather) {
                     _this.fillStoreElement(item, weather);
                     loader.remove();
-                }, function (weather) {
-
                 });
             }
         }
@@ -242,22 +225,24 @@ function WeatherUpdater() {
     this.initLocalWeather = function () {
         var loader = _this.createLoader();
         document.getElementsByClassName("local")[0].appendChild(loader);
-        _this.getCurrentPosition(function (position) {
-            _this.getWeather(position, function (weather) {
-                document.querySelectorAll(".local .local-city")[0].innerHTML = weather != null ? weather.name : "...";
-                document.querySelectorAll(".local .local-icon")[0]
-                    .setAttribute(
-                        "src",
-                        weather != null ? (_this.GET_WEATHER_ICON +
-                            weather.weather[0].icon.replace("n", "d") +
-                            _this.GET_WEATHER_ICON_POSTFIX) : "img/cloud.svg");
-                document.querySelectorAll(".local .local-degrees")[0].innerHTML = weather != null ? weather.main.temp : "...";
-                var parametersDiv = document.querySelectorAll(".local .list-reset")[0];
-                var parameters = _this.getParameters(weather);
-                _this.setParameters(parametersDiv, parameters);
-                loader.remove();
-            });
-        });
+        _this.getCurrentPosition(
+            function (position) {
+                _this.getWeather(position, function (weather) {
+                    document.querySelectorAll(".local .local-city")[0].innerHTML = weather != null ? weather.name : "...";
+                    document.querySelectorAll(".local .local-icon")[0]
+                        .setAttribute(
+                            "src",
+                            weather != null ? (_this.GET_WEATHER_ICON +
+                                weather.weather[0].icon.replace("n", "d") +
+                                _this.GET_WEATHER_ICON_POSTFIX) : "img/cloud.svg");
+                    document.querySelectorAll(".local .local-degrees")[0].innerHTML = weather != null ? weather.main.temp : "...";
+                    var parametersDiv = document.querySelectorAll(".local .list-reset")[0];
+                    var parameters = _this.getParameters(weather);
+                    _this.setParameters(parametersDiv, parameters);
+                    loader.remove();
+                });
+            }
+            );
     };
 
     this.setParameters = function (div, params) {
@@ -333,7 +318,7 @@ function WeatherUpdater() {
         }
     };
 
-    this.getWeather = function (position, onSuccess, onError) {
+    this.getWeather = function (position, onSuccess) {
         fetch(_this.GET_WEATHER_BY_LAT_LON + "lat=" + position.lat + "&lon=" + position.lon + "&appid=" + _this.weatherApiKey)
             .then(function (response) {
                 if (response.status !== 200) {
@@ -346,7 +331,7 @@ function WeatherUpdater() {
                 });
             })
             .catch(function (err) {
-                onError(null);
+                console.log(err);
             });
     };
 
