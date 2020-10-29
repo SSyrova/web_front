@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="css/style.css" rel="stylesheet">
+    <script type="text/javascript" src="js/weather.js"></script>
     <title>Lab 1</title>
 </head>
-<body>
+<body onload="initScript()">
 <main class="main">
     <section class="refresh">
         <h1 class="refresh-title" >Погода здесь</h1>
@@ -14,238 +15,35 @@
     </section>
     <section class="local">
         <div class="local-general">
-            <h2 class="local-city">Saint Petersburg</h2>
+            <h2 class="local-city">...</h2>
             <p class="local-short-info">
                 <img class="local-icon" src="img/cloud.svg" width="75" height="75">
-                <span class="local-degrees degrees">8</span>
+                <span class="local-degrees degrees">...</span>
             </p>
         </div>
         <ul class="list-reset">
-            <li class="details-item">
-                <span class="details-property">Ветер</span>
-                <span class="details-value">Moderate breeze, 6.0 m/s, North-northwest</span>
-            </li>
-            <li class="details-item">
-                <span class="details-property">Облачность</span>
-                <span class="details-value">Broken clouds</span>
-            </li>
-            <li class="details-item">
-                <span class="details-property">Давление</span>
-                <span class="details-value">1013 hpa</span>
-            </li>
-            <li class="details-item">
-                <span class="details-property">Влажность</span>
-                <span class="details-value">52 %</span>
-            </li>
-            <li class="details-item">
-                <span class="details-property">Координаты</span>
-                <span class="details-value">[59.88, 30.42]</span>
-            </li>
+
         </ul>
     </section>
     <section class="favorites">
         <div class="favorites-header">
             <h2 class="favorites-title">Избранное</h2>
-            <div class="favorites-add">
-                <input type="text" class="favorites-input" placeholder="Добавить новый город">
+            <div class="favorites-add autocomplete">
+                <input type="text" class="favorites-input" list="cities" autocomplete="off" placeholder="Добавить новый город">
+                <datalist id="cities"></datalist>
                 <button class="favorites-add-button" type="button"></button>
             </div>
         </div>
         <ul class="favorites-list list-reset">
-            <li class="favorites-item">
-                <div class="favorite-item-general">
-                    <h3 class="favorite-item-city">Moscow</h3>
-                    <p class="favorite-item-short-info">
-                        <span class="favorite-item-degrees degrees">5</span>
-                        <img class="favorite-item-icon" src="img/cloud.svg" width="30" height="30">
-                    </p>
-                    <button class="favorite-item-button"></button>
-                </div>
-                <ul class="list-reset">
-                    <li class="details-item">
-                        <span class="details-property">Ветер</span>
-                        <span class="details-value">Moderate breeze, 6.0 m/s, North-northwest</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Облачность</span>
-                        <span class="details-value">Broken clouds</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Давление</span>
-                        <span class="details-value">1013 hpa</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Влажность</span>
-                        <span class="details-value">52 %</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Координаты</span>
-                        <span class="details-value">[59.88, 30.42]</span>
-                    </li>
-                </ul>
-            </li>
-            <li class="favorites-item">
-                <div class="favorite-item-general">
-                    <h3 class="favorite-item-city">Moscow</h3>
-                    <p class="favorite-item-short-info">
-                        <span class="favorite-item-degrees degrees">5</span>
-                        <img class="favorite-item-icon" src="img/cloud.svg" width="30" height="30">
-                    </p>
-                    <button class="favorite-item-button"></button>
-                </div>
-                <ul class="list-reset">
-                    <li class="details-item">
-                        <span class="details-property">Ветер</span>
-                        <span class="details-value">Moderate breeze, 6.0 m/s, North-northwest</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Облачность</span>
-                        <span class="details-value">Broken clouds</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Давление</span>
-                        <span class="details-value">1013 hpa</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Влажность</span>
-                        <span class="details-value">52 %</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Координаты</span>
-                        <span class="details-value">[59.88, 30.42]</span>
-                    </li>
-                </ul>
-            </li>
-            <li class="favorites-item">
-                <div class="favorite-item-general">
-                    <h3 class="favorite-item-city">Moscow</h3>
-                    <p class="favorite-item-short-info">
-                        <span class="favorite-item-degrees degrees">5</span>
-                        <img class="favorite-item-icon" src="img/cloud.svg" width="30" height="30">
-                    </p>
-                    <button class="favorite-item-button"></button>
-                </div>
-                <ul class="list-reset">
-                    <li class="details-item">
-                        <span class="details-property">Ветер</span>
-                        <span class="details-value">Moderate breeze, 6.0 m/s, North-northwest</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Облачность</span>
-                        <span class="details-value">Broken clouds</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Давление</span>
-                        <span class="details-value">1013 hpa</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Влажность</span>
-                        <span class="details-value">52 %</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Координаты</span>
-                        <span class="details-value">[59.88, 30.42]</span>
-                    </li>
-                </ul>
-            </li>
-            <li class="favorites-item">
-                <div class="favorite-item-general">
-                    <h3 class="favorite-item-city">Moscow</h3>
-                    <p class="favorite-item-short-info">
-                        <span class="favorite-item-degrees degrees">5</span>
-                        <img class="favorite-item-icon" src="img/cloud.svg" width="30" height="30">
-                    </p>
-                    <button class="favorite-item-button"></button>
-                </div>
-                <ul class="list-reset">
-                    <li class="details-item">
-                        <span class="details-property">Ветер</span>
-                        <span class="details-value">Moderate breeze, 6.0 m/s, North-northwest</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Облачность</span>
-                        <span class="details-value">Broken clouds</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Давление</span>
-                        <span class="details-value">1013 hpa</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Влажность</span>
-                        <span class="details-value">52 %</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Координаты</span>
-                        <span class="details-value">[59.88, 30.42]</span>
-                    </li>
-                </ul>
-            </li>
-            <li class="favorites-item">
-                <div class="favorite-item-general">
-                    <h3 class="favorite-item-city">Moscow</h3>
-                    <p class="favorite-item-short-info">
-                        <span class="favorite-item-degrees degrees">5</span>
-                        <img class="favorite-item-icon" src="img/cloud.svg" width="30" height="30">
-                    </p>
-                    <button class="favorite-item-button"></button>
-                </div>
-                <ul class="list-reset">
-                    <li class="details-item">
-                        <span class="details-property">Ветер</span>
-                        <span class="details-value">Moderate breeze, 6.0 m/s, North-northwest</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Облачность</span>
-                        <span class="details-value">Broken clouds</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Давление</span>
-                        <span class="details-value">1013 hpa</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Влажность</span>
-                        <span class="details-value">52 %</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Координаты</span>
-                        <span class="details-value">[59.88, 30.42]</span>
-                    </li>
-                </ul>
-            </li>
-            <li class="favorites-item">
-                <div class="favorite-item-general">
-                    <h3 class="favorite-item-city">Moscow</h3>
-                    <p class="favorite-item-short-info">
-                        <span class="favorite-item-degrees degrees">5</span>
-                        <img class="favorite-item-icon" src="img/cloud.svg" width="30" height="30">
-                    </p>
-                    <button class="favorite-item-button"></button>
-                </div>
-                <ul class="list-reset">
-                    <li class="details-item">
-                        <span class="details-property">Ветер</span>
-                        <span class="details-value">Moderate breeze, 6.0 m/s, North-northwest</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Облачность</span>
-                        <span class="details-value">Broken clouds</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Давление</span>
-                        <span class="details-value">1013 hpa</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Влажность</span>
-                        <span class="details-value">52 %</span>
-                    </li>
-                    <li class="details-item">
-                        <span class="details-property">Координаты</span>
-                        <span class="details-value">[59.88, 30.42]</span>
-                    </li>
-                </ul>
-            </li>
+
         </ul>
     </section>
 </main>
+<script>
+    function initScript() {
+        var weather = new WeatherUpdater();
+        weather.init()
+    }
+</script>
 </body>
 </html>
