@@ -26,9 +26,10 @@ function WeatherUpdater() {
     this.initDeleteButton = function () {
         var buttons = document.getElementsByClassName("favorite-item-button");
         for (const button of buttons) {
-            button.addEventListener('click', function () {
-                _this.deleteCard(this);
-            });
+            // button.addEventListener('click', _this.deleteCard.bind(event, button));
+            button.onClick = function(e) {
+                _this.deleteCard(e);
+            }
         }
     };
 
@@ -49,6 +50,8 @@ function WeatherUpdater() {
         }
         _this.lStorage.setItem("cities", JSON.stringify(cities));
         card.remove();
+        button.stopPropagation();
+        button.preventDefault();
     };
 
     this.initAddButton = function () {
@@ -70,6 +73,7 @@ function WeatherUpdater() {
                     list.appendChild(item);
                     _this.getWeather(position, function (weather) {
                         _this.saveToStorage(weather.coord);
+                        input.value = "";
                         _this.fillStoreElement(item, weather);
                         loader.remove();
                     });
@@ -121,7 +125,7 @@ function WeatherUpdater() {
                     });
                 })
                 .catch(function (err) {
-
+                    alert("Не удалось загрузить города. Проверьте подключение к интернету или попробуйте обратиться позже");
                 });
         });
     };
@@ -147,6 +151,8 @@ function WeatherUpdater() {
                 list.appendChild(item);
                 _this.getWeather(city, function (weather) {
                     _this.fillStoreElement(item, weather);
+                    item.childNodes[0].style.visibility = 'visible';
+                    item.childNodes[1].style.visibility = 'visible';
                     loader.remove();
                 });
             }
@@ -172,6 +178,7 @@ function WeatherUpdater() {
 
         var general = document.createElement("div");
         general.classList.add("favorite-item-general");
+        general.style.visibility = 'hidden';
 
         var city = document.createElement("h3");
         city.classList.add("favorite-item-city");
@@ -207,6 +214,7 @@ function WeatherUpdater() {
 
         var list = document.createElement("ul");
         list.classList.add("list-reset");
+        list.style.visibility = 'hidden';
 
         node.appendChild(list);
 
@@ -224,7 +232,8 @@ function WeatherUpdater() {
 
     this.initLocalWeather = function () {
         var loader = _this.createLoader();
-        document.getElementsByClassName("local")[0].appendChild(loader);
+        let local = document.getElementsByClassName("local")[0];
+        local.appendChild(loader);
         _this.getCurrentPosition(
             function (position) {
                 _this.getWeather(position, function (weather) {
@@ -239,6 +248,8 @@ function WeatherUpdater() {
                     var parametersDiv = document.querySelectorAll(".local .list-reset")[0];
                     var parameters = _this.getParameters(weather);
                     _this.setParameters(parametersDiv, parameters);
+                    local.children[0].style.visibility = 'visible';
+                    local.children[1].style.visibility = 'visible';
                     loader.remove();
                 });
             }
@@ -322,8 +333,7 @@ function WeatherUpdater() {
         fetch(_this.GET_WEATHER_BY_LAT_LON + "lat=" + position.lat + "&lon=" + position.lon + "&appid=" + _this.weatherApiKey)
             .then(function (response) {
                 if (response.status !== 200) {
-                    console.log('Looks like there was a problem. Status Code: ' +
-                        response.status);
+                    alert("Не удалось загрузить погоду. Проверьте подключение к интернету или попробуйте обратиться позже");
                     return;
                 }
                 response.json().then(function (data) {
@@ -331,7 +341,7 @@ function WeatherUpdater() {
                 });
             })
             .catch(function (err) {
-                console.log(err);
+                alert("Не удалось загрузить погоду. Проверьте подключение к интернету или попробуйте обратиться позже");
             });
     };
 
