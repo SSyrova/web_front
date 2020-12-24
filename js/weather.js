@@ -1,11 +1,11 @@
 function WeatherUpdater() {
 
     _this = this;
-    _this.GET_WEATHER_BY_LAT_LON = "http://localhost:3000/weather/coordinates?";
-    _this.WEATHER_ICON_SRC = "http://openweathermap.org/img/wn/";
-    _this.WEATHER_ICON_SRC_POSTFIX = "@4x.png";
-    _this.GET_CITIES = "http://localhost:3000/weather/city?name=";
-    _this.FAVOURITES = "http://localhost:3000/favourites"
+    _this.weatherApiKey = "6d2a4733147114b53616a260387a5b83";
+    _this.GET_WEATHER_BY_LAT_LON = "https://api.openweathermap.org/data/2.5/weather?units=metric&lang=ru&";
+    _this.GET_WEATHER_ICON = "http://openweathermap.org/img/wn/";
+    _this.GET_WEATHER_ICON_POSTFIX = "@4x.png";
+    _this.GET_CITIES = "https://parseapi.back4app.com/classes/City?limit=20&keys=name,country.name,location&where=";
     _this.lStorage = window.localStorage;
 
     this.init = function () {
@@ -41,16 +41,17 @@ function WeatherUpdater() {
             lat: arrayPos[0],
             lon: arrayPos[1]
         };
-        fetch(_this.FAVOURITES + "?lat=" + deleteCity.lat + "&lon=" + deleteCity.lon, { method: 'delete'})
-            .then(function (response) {
-                if (response.status !== 200) {
-                    alert("Не удалось удалить город. Проверьте подключение к интернету или попробуйте обратиться позже");
-                    return;
-                }
-                card.remove();
-                button.stopPropagation();
-                button.preventDefault();
-            });
+        var cities = JSON.parse(_this.lStorage.getItem("cities"));
+        for (const it of cities) {
+            if (it.lat === deleteCity.lat && it.lon === deleteCity.lon) {
+                cities.splice(cities.indexOf(it), 1);
+                break;
+            }
+        }
+        _this.lStorage.setItem("cities", JSON.stringify(cities));
+        card.remove();
+        button.stopPropagation();
+        button.preventDefault();
     };
 
     this.initAddButton = function () {
@@ -71,12 +72,9 @@ function WeatherUpdater() {
                     var list = document.getElementsByClassName("favorites-list")[0];
                     list.appendChild(item);
                     _this.getWeather(position, function (weather) {
-                        _this.saveToStorage(weather.coord, function () {
-                            input.value = "";
-                            _this.fillStoreElement(item, weather);
-                            item.childNodes[0].style.visibility = 'visible';
-                            item.childNodes[1].style.visibility = 'visible';
-                        });
+                        _this.saveToStorage(weather.coord);
+                        input.value = "";
+                        _this.fillStoreElement(item, weather);
                         loader.remove();
                     });
                     break;
@@ -85,35 +83,31 @@ function WeatherUpdater() {
         });
     };
 
-    this.saveToStorage = function (position, callback) {
-        fetch(_this.FAVOURITES + "?lat=" + position.lat + "&lon=" + position.lon, { method: 'POST'})
-            .then(function (response) {
-                if (response.status !== 200) {
-                    alert("Не удалось сохранить город. Проверьте подключение к интернету или попробуйте обратиться позже");
-                    return false;
-                }
-                callback();
-            })
-            .catch(function (err) {
-                alert("Не удалось сохранить город. Проверьте подключение к интернету или попробуйте обратиться позже");
-                return false;
-            });
-
-        // var cities = _this.lStorage.getItem("cities");
-        // if (cities && cities !== "") {
-        //     cities = JSON.parse(cities);
-        //     cities.push({lat: position.lat, lon: position.lon});
-        //     _this.lStorage.setItem("cities", JSON.stringify(cities));
-        // } else {
-        //     cities = JSON.stringify([{lat: position.lat, lon: position.lon}]);
-        //     _this.lStorage.setItem("cities", cities);
-        // }
+    this.saveToStorage = function (position) {
+        var cities = _this.lStorage.getItem("cities");
+        if (cities && cities !== "") {
+            cities = JSON.parse(cities);
+            cities.push({lat: position.lat, lon: position.lon});
+            _this.lStorage.setItem("cities", JSON.stringify(cities));
+        } else {
+            cities = JSON.stringify([{lat: position.lat, lon: position.lon}]);
+            _this.lStorage.setItem("cities", cities);
+        }
     };
 
     this.initAutoComplete = function () {
         var input = document.getElementsByClassName("favorites-input")[0];
         input.addEventListener('input', (event) => {
-            fetch(_this.GET_CITIES + event.target.value)
+            fetch(_this.GET_CITIES + encodeURIComponent(JSON.stringify({
+                "name": {
+                    "$regex": event.target.value
+                }
+            })), {
+                headers: {
+                    'X-Parse-Application-Id': 'mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja',
+                    'X-Parse-Master-Key': 'TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH',
+                }
+            })
                 .then(function (response) {
                     if (response.status !== 200) {
                         console.log('Looks like there was a problem. Status Code: ' +
@@ -145,50 +139,34 @@ function WeatherUpdater() {
         return option;
     };
 
-    this.getFavourites = function (onSuccess) {
-        fetch(_this.FAVOURITES)
-            .then(function (response) {
-                if (response.status !== 200) {
-                    alert("Не удалось получить города. Проверьте подключение к интернету или попробуйте обратиться позже");
-                    return;
-                }
-                response.json().then(function (data) {
-                    onSuccess(data);
-                });
-            })
-            .catch(function (err) {
-                alert("Не удалось получить города. Проверьте подключение к интернету или попробуйте обратиться позже");
-            });
-    }
-
     this.initStoredWeather = function () {
-        _this.getFavourites(function (cities) {
-            if (cities) {
-                var list = document.querySelectorAll(".favorites .favorites-list")[0];
-                for (const city of cities) {
-                    let item = _this.createStoreElement();
-                    let loader = _this.createLoader();
-                    item.appendChild(loader);
-                    list.appendChild(item);
-                    _this.getWeather(city, function (weather) {
-                        _this.fillStoreElement(item, weather);
-                        item.childNodes[0].style.visibility = 'visible';
-                        item.childNodes[1].style.visibility = 'visible';
-                        loader.remove();
-                    });
-                }
+        var cities = _this.lStorage.getItem("cities");
+        if (cities && cities !== "") {
+            cities = JSON.parse(cities);
+            var list = document.querySelectorAll(".favorites .favorites-list")[0];
+            for (const city of cities) {
+                let item = _this.createStoreElement();
+                let loader = _this.createLoader();
+                item.appendChild(loader);
+                list.appendChild(item);
+                _this.getWeather(city, function (weather) {
+                    _this.fillStoreElement(item, weather);
+                    item.childNodes[0].style.visibility = 'visible';
+                    item.childNodes[1].style.visibility = 'visible';
+                    loader.remove();
+                });
             }
-            _this.initDeleteButton();
-        });
+        }
+        _this.initDeleteButton();
     };
 
     this.fillStoreElement = function (item, weather) {
         if (weather != null) {
             item.getElementsByClassName("favorite-item-city")[0].innerHTML = weather.name;
             item.getElementsByClassName("favorite-item-degrees")[0].innerHTML = weather.main.temp;
-            item.getElementsByClassName("favorite-item-icon")[0].setAttribute("src", _this.WEATHER_ICON_SRC +
+            item.getElementsByClassName("favorite-item-icon")[0].setAttribute("src", _this.GET_WEATHER_ICON +
                 weather.weather[0].icon.replace("n", "d") +
-                _this.WEATHER_ICON_SRC_POSTFIX);
+                _this.GET_WEATHER_ICON_POSTFIX);
             var parameters = _this.getParameters(weather);
             _this.setParameters(item.getElementsByClassName("list-reset")[0], parameters);
         }
@@ -255,8 +233,6 @@ function WeatherUpdater() {
     this.initLocalWeather = function () {
         var loader = _this.createLoader();
         let local = document.getElementsByClassName("local")[0];
-        local.children[0].style.visibility = 'hidden';
-        local.children[1].style.visibility = 'hidden';
         local.appendChild(loader);
         _this.getCurrentPosition(
             function (position) {
@@ -265,9 +241,9 @@ function WeatherUpdater() {
                     document.querySelectorAll(".local .local-icon")[0]
                         .setAttribute(
                             "src",
-                            weather != null ? (_this.WEATHER_ICON_SRC +
+                            weather != null ? (_this.GET_WEATHER_ICON +
                                 weather.weather[0].icon.replace("n", "d") +
-                                _this.WEATHER_ICON_SRC_POSTFIX) : "img/cloud.svg");
+                                _this.GET_WEATHER_ICON_POSTFIX) : "img/cloud.svg");
                     document.querySelectorAll(".local .local-degrees")[0].innerHTML = weather != null ? weather.main.temp : "...";
                     var parametersDiv = document.querySelectorAll(".local .list-reset")[0];
                     var parameters = _this.getParameters(weather);
@@ -354,7 +330,7 @@ function WeatherUpdater() {
     };
 
     this.getWeather = function (position, onSuccess) {
-        fetch(_this.GET_WEATHER_BY_LAT_LON + "lat=" + position.lat + "&lon=" + position.lon)
+        fetch(_this.GET_WEATHER_BY_LAT_LON + "lat=" + position.lat + "&lon=" + position.lon + "&appid=" + _this.weatherApiKey)
             .then(function (response) {
                 if (response.status !== 200) {
                     alert("Не удалось загрузить погоду. Проверьте подключение к интернету или попробуйте обратиться позже");
