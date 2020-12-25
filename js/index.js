@@ -29,6 +29,7 @@ class WeatherManager {
                     );
                     self._this.addFavoriteCity(position, function (point) {
                         self.storageManager.savePoint(point);
+                        input.value = "";
                     });
                     break;
                 }
