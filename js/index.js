@@ -59,15 +59,16 @@ class WeatherManager {
                 card.querySelector(".loader-wrapper").remove();
             },
             function () {
-
+                alert('Не могу загрузить город. Попробуйте позже и оставайтесь дома')
             },
             function (error) {
-
+                alert('Не могу загрузить город. Попробуйте позже и оставайтесь дома')
             })
     }
 
     initAutocompleteInput() {
         document.getElementById("cityInput").addEventListener('input', function (event) {
+            document.getElementById("cityInputError").innerText = "";
             let input = event.target.value;
             input = input.replace(/^(.)/, function (v) {
                 return v.toUpperCase();
@@ -147,6 +148,9 @@ class WeatherManager {
                     },
                     function (error) {
                         alert("Не могу получить погоду по вашему местоположению. Извините :(");
+                    },
+                    function(error) {
+                        alert("Не могу получить погоду по вашему местоположению. Извините :(");
                     }
                 );
             },
@@ -158,6 +162,9 @@ class WeatherManager {
                     },
                     function (error) {
                         alert("Не могу получить погоду по своему любимому месту. Извините :(");
+                    },
+                    function(error) {
+                        alert("Не могу получить погоду по вашему местоположению. Извините :(");
                     }
                 );
             },
@@ -169,6 +176,9 @@ class WeatherManager {
                     },
                     function (error) {
                         alert("Не могу получить погоду по своему любимому месту. Извините :(");
+                    },
+                    function(error) {
+                        alert("Не могу получить погоду по вашему местоположению. Извините :(");
                     }
                 );
             }
@@ -314,7 +324,7 @@ class HttpClient {
                     });
                 }
                 if (cities.length < 1) {
-                    alert('Ни одного города не найдено')
+                    document.getElementById("cityInputError").innerText = "Город не найден";
                 }
                 onSuccess(cities);
             })

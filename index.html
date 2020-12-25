@@ -57,8 +57,12 @@
         <div class="favorites-header">
             <h2 class="favorites-title">Избранное</h2>
             <div class="favorites-add autocomplete">
-                <input type="text" id="cityInput" class="favorites-input" list="cities" autocomplete="off"
-                       placeholder="Добавить новый город">
+                <div>
+                    <input type="text" id="cityInput" class="favorites-input" list="cities" autocomplete="off"
+                           placeholder="Добавить новый город">
+                    <br/>
+                    <lablel id="cityInputError" for="cityInput" style="color: red"></lablel>
+                </div>
                 <datalist id="cities"></datalist>
                 <button id="addCity" class="favorites-add-button" type="button"></button>
             </div>
