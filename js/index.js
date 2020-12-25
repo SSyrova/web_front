@@ -45,7 +45,8 @@ class WeatherManager {
         });
     }
 
-    addFavoriteCity(point, onSuccess = () => {}) {
+    addFavoriteCity(point, onSuccess = () => {
+    }) {
         const card = document.createElement("li");
         card.classList.add("favorites-item");
         card.appendChild(WeatherManager.getTemplate("loader"));
@@ -68,9 +69,13 @@ class WeatherManager {
     initAutocompleteInput() {
         document.getElementById("cityInput").addEventListener('input', function (event) {
             let input = event.target.value;
-            input = input.replace(/^(.)/, function(v) { return v.toUpperCase(); });
+            input = input.replace(/^(.)/, function (v) {
+                return v.toUpperCase();
+            });
             input = input.replace("-", " ");
-            input = input.replace(/\s(.)/, function(v) { return v.toUpperCase(); });
+            input = input.replace(/\s(.)/, function (v) {
+                return v.toUpperCase();
+            });
             document.getElementById("cityInput").value = input;
             self.httpClient.getCities(input,
                 function (cities) {
@@ -307,7 +312,8 @@ class HttpClient {
                     data.results.forEach(function (city) {
                         cities.push(new City(city));
                     });
-                } else {
+                }
+                if (cities.length < 1) {
                     alert('Ни одного города не найдено')
                 }
                 onSuccess(cities);
