@@ -71,6 +71,7 @@ class WeatherManager {
 
     initAutocompleteInput() {
         document.getElementById("cityInput").addEventListener('input', function (event) {
+            document.getElementById("cityInputError").innerText = "";
             let input = event.target.value;
             input = input.replace(/^(.)/, function (v) {
                 return v.toUpperCase();
