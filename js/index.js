@@ -307,6 +307,8 @@ class HttpClient {
                     data.results.forEach(function (city) {
                         cities.push(new City(city));
                     });
+                } else {
+                    alert('Ни одного города не найдено')
                 }
                 onSuccess(cities);
             })
