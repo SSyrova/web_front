@@ -4,45 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="css/style.css" rel="stylesheet">
-    <script type="text/javascript" src="js/weather.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
     <title>Lab 1</title>
 </head>
 <body onload="initScript()">
+<template id="localWeatherTemplate">
+    <div class="local-general">
+        <h2 class="local-city"></h2>
+        <p class="local-short-info">
+            <img alt="" class="local-icon" src="img/cloud.svg" width="75" height="75">
+            <span class="local-degrees degrees">...</span>
+        </p>
+    </div>
+    <ul class="list-reset">
+
+    </ul>
+</template>
+<template id="favoriteCityTemplate">
+    <div class="favorite-item-general">
+        <h3 class="favorite-item-city"></h3>
+        <p class="favorite-item-short-info">
+            <span class="favorite-item-degrees degrees"></span>
+            <img alt="" class="favorite-item-icon" width="30" height="30">
+        </p>
+        <button class="favorite-item-button"></button>
+    </div>
+    <ul class="list-reset">
+    </ul>
+</template>
+<template id="weatherPropertyTemplate">
+    <li class="details-item">
+        <span class="details-property"></span>
+        <span class="details-value"></span>
+    </li>
+</template>
+<template id="loader">
+    <div class="loader-wrapper">
+        <div class="loader"></div>
+    </div>
+</template>
 <main class="main">
     <section class="refresh">
-        <h1 class="refresh-title" >Погода здесь</h1>
-        <button class="refresh-button" type="button">Обновить геолокацию</button>
+        <h1 class="refresh-title">Погода здесь</h1>
+        <button id="refreshWeatherButton" class="refresh-button" type="button">Обновить геолокацию</button>
     </section>
-    <section class="local">
-        <div class="local-general" style="visibility: hidden">
-            <h2 class="local-city">...</h2>
-            <p class="local-short-info">
-                <img class="local-icon" src="img/cloud.svg" width="75" height="75">
-                <span class="local-degrees degrees">...</span>
-            </p>
-        </div>
-        <ul class="list-reset" style="visibility: hidden">
-
-        </ul>
+    <section id="localWeather" class="local">
     </section>
     <section class="favorites">
         <div class="favorites-header">
             <h2 class="favorites-title">Избранное</h2>
             <div class="favorites-add autocomplete">
-                <input type="text" class="favorites-input" list="cities" autocomplete="off" placeholder="Добавить новый город">
+                <input type="text" id="cityInput" class="favorites-input" list="cities" autocomplete="off"
+                       placeholder="Добавить новый город">
                 <datalist id="cities"></datalist>
-                <button class="favorites-add-button" type="button"></button>
+                <button id="addCity" class="favorites-add-button" type="button"></button>
             </div>
         </div>
-        <ul class="favorites-list list-reset">
+        <ul id="favorites" class="favorites-list list-reset">
 
         </ul>
     </section>
 </main>
 <script>
     function initScript() {
-        var weather = new WeatherUpdater();
-        weather.init()
+        var weather = new WeatherManager();
+        weather.init();
     }
 </script>
 </body>
