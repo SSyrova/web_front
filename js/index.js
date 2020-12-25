@@ -27,10 +27,12 @@ class WeatherManager {
                         el.getAttribute("lat"),
                         el.getAttribute("lng")
                     );
-                    self._this.addFavoriteCity(position, function (point) {
-                        self.storageManager.savePoint(point);
-                        input.value = "";
-                    });
+                    if (position.lat && position.lng) {
+                        self._this.addFavoriteCity(position, function (point) {
+                            self.storageManager.savePoint(point);
+                            input.value = "";
+                        });
+                    }
                     break;
                 }
             }
@@ -74,19 +76,25 @@ class WeatherManager {
                 function (cities) {
                     const list = document.getElementById("cities");
                     list.textContent = "";
-                    cities.forEach(function (city) {
-                        list.appendChild(WeatherManager.getCityElement(city))
-                    });
+                    if (cities && cities.length > 0) {
+                        cities.forEach(function (city) {
+                            list.appendChild(WeatherManager.getCityElement(city))
+                        });
+                    } else {
+                        list.innerHTML += '<option value="Не найдено городов">';
+                    }
                 })
         });
     }
 
     static getCityElement(city) {
-        var option = document.createElement("option");
-        option.setAttribute("value", city.name);
-        option.setAttribute("lat", city.point.lat);
-        option.setAttribute("lng", city.point.lng);
-        option.innerHTML = city.country + ", " + city.name;
+        var option = WeatherManager.getTemplate("autoOption");
+        option.querySelector("option").setAttribute("value", city.name);
+        if (city.point) {
+            option.querySelector("option").setAttribute("lat", city.point.lat);
+            option.querySelector("option").setAttribute("lng", city.point.lng);
+            option.querySelector("option").innerHTML = city.country + ", " + city.name;
+        }
         return option;
     }
 
@@ -312,7 +320,7 @@ class HttpClient {
 class City {
     constructor(data) {
         this.name = data.name;
-        this.country = data.country.name;
+        this.country = data.country ? data.country.name : "";
         if (data.location) {
             this.point = new Point(data.location.latitude, data.location.longitude);
         }
