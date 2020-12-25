@@ -306,8 +306,10 @@ class HttpClient {
                             cities.push(new City(city));
                         });
                     }
-                    else {
-                        alert('Ни одного города не найдено')
+                    if(cities.length < 1) {
+                        document.getElementById("cityInputError").innerText = "Не найдено городов"
+                    } else {
+                        document.getElementById("cityInputError").innerText = ""
                     }
                     onSuccess(cities);
                 })
