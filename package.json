@@ -1,0 +1,23 @@
+{
+  "name": "web_front",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "^8.2.1"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SSyrova/web_lab_1.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SSyrova/web_lab_1/issues"
+  },
+  "homepage": "https://github.com/SSyrova/web_lab_1#readme"
+}
