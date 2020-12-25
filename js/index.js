@@ -28,9 +28,10 @@ class WeatherManager {
                         el.getAttribute("lng")
                     );
                     if (position.lat && position.lng) {
-                        self._this.addFavoriteCity(position, function (point) {
-                            self.storageManager.savePoint(point);
-                            input.value = "";
+                        self._this.addFavoriteCity(position, function (position) {
+                            self.httpClient.savePoint(position, function () {
+                                input.value = '';
+                            });
                         });
                     }
                     break;
@@ -40,12 +41,15 @@ class WeatherManager {
     }
 
     initStoreWeather() {
-        self.storageManager.loadPoints().forEach(function (point) {
-            self._this.addFavoriteCity(point);
+        self.httpClient.getPoints(function (points) {
+            points.forEach(function (point) {
+                self._this.addFavoriteCity(point);
+            });
         });
     }
 
-    addFavoriteCity(point, onSuccess = () => {}) {
+    addFavoriteCity(point, onSuccess = () => {
+    }) {
         const card = document.createElement("li");
         card.classList.add("favorites-item");
         card.appendChild(WeatherManager.getTemplate("loader"));
@@ -68,9 +72,13 @@ class WeatherManager {
     initAutocompleteInput() {
         document.getElementById("cityInput").addEventListener('input', function (event) {
             let input = event.target.value;
-            input = input.replace(/^(.)/, function(v) { return v.toUpperCase(); });
+            input = input.replace(/^(.)/, function (v) {
+                return v.toUpperCase();
+            });
             input = input.replace("-", " ");
-            input = input.replace(/\s(.)/, function(v) { return v.toUpperCase(); });
+            input = input.replace(/\s(.)/, function (v) {
+                return v.toUpperCase();
+            });
             document.getElementById("cityInput").value = input;
             self.httpClient.getCities(input,
                 function (cities) {
@@ -119,8 +127,10 @@ class WeatherManager {
         node.querySelector(".favorite-item-button").addEventListener('click', function () {
             const card = this.parentElement.parentElement;
             const pos = JSON.parse(card.querySelector(".list-reset > .details-item:last-child .details-value").innerHTML);
-            card.remove();
-            self.storageManager.deletePoint(new Point(pos[0], pos[1]));
+            self.httpClient.deletePoint(new Point(pos[0], pos[1]),
+                function () {
+                    card.remove();
+                })
         })
         const list = node.querySelector(".list-reset");
         weather.options.forEach(function (option) {
@@ -260,14 +270,13 @@ class HttpClient {
     static WEATHER_ICON_PREFIX = "http://openweathermap.org/img/wn/";
     static WEATHER_ICON_POSTFIX = "@4x.png";
 
-    static WEATHER_API_KEY = "6d2a4733147114b53616a260387a5b83";
-    static GET_WEATHER_BY_LAT_LNG = "https://api.openweathermap.org/data/2.5/weather?units=metric&lang=ru&";
+    static BASE_URL = "http://localhost:3000/"
+    static GET_WEATHER_BY_LAT_LNG = HttpClient.BASE_URL + "weather/coordinates?";
+    static GET_CITIES_BY_NAME = HttpClient.BASE_URL + "weather/city?name=";
+    static FAVORITE = HttpClient.BASE_URL + "favourites";
 
-    static CITIES_API_KEY = "4199bfcf95msh9e0af763bc60280p173f25jsn8a42f3856b77";
-    static GET_CITIES_BY_NAME = "https://parseapi.back4app.com/classes/City?limit=20&include=country&keys=name,country,country.name,location&where=";
-
-    getWeather(point, onSuccess, onFail, onError) {
-        fetch(HttpClient.GET_WEATHER_BY_LAT_LNG + "lat=" + point.lat + "&lon=" + point.lng + "&appid=" + HttpClient.WEATHER_API_KEY)
+    getWeather(point, onSuccess, onFail = () => {}, onError = (error) => {}) {
+        fetch(HttpClient.GET_WEATHER_BY_LAT_LNG + "lat=" + point.lat + "&lng=" + point.lng)
             .then(function (response) {
                 if (response.status !== 200) {
                     onFail();
@@ -283,34 +292,61 @@ class HttpClient {
             });
     }
 
-    getCities(input, onSuccess, onFail, onError) {
-        const where = encodeURIComponent(JSON.stringify({
-            "name": {
-                "$regex": input
-            }
-        }));
-        fetch(HttpClient.GET_CITIES_BY_NAME + where,
-            {
-                "headers": {
-                    "X-Parse-Application-Id": "mxsebv4KoWIGkRntXwyzg6c6DhKWQuit8Ry9sHja",
-                    "X-Parse-Master-Key": "TpO0j3lG2PmEVMXlKYQACoOXKQrL3lwM0HwR9dbH"
+    getCities(input, onSuccess, onFail = () => {}, onError = (error) => {}) {
+        fetch(HttpClient.GET_CITIES_BY_NAME + input)
+            .then(function (response) {
+                if (response.status !== 200) {
+                    onFail();
+                    return;
                 }
-            }
-        ).then(function (response) {
-            if (response.status !== 200) {
-                onFail();
-                return;
-            }
-            response.json().then(function (data) {
-                const cities = []
-                if (data && data.results) {
-                    data.results.forEach(function (city) {
-                        cities.push(new City(city));
-                    });
-                }
-                onSuccess(cities);
+                response.json().then(function (data) {
+                    const cities = []
+                    if (data && data.results) {
+                        data.results.forEach(function (city) {
+                            cities.push(new City(city));
+                        });
+                    }
+                    onSuccess(cities);
+                })
             })
-        })
+            .catch(function (error) {
+                onError(error);
+            })
+    }
+
+    getPoints(onSuccess, onFail = () => {}, onError = (error) => {}) {
+        fetch(HttpClient.FAVORITE)
+            .then(function (response) {
+                if (response.status !== 200) {
+                    onFail();
+                    return;
+                }
+                response.json().then(function (data) {
+                    onSuccess(data);
+                });
+            })
+            .catch(function (error) {
+                onError(error)
+            });
+    }
+
+    savePoint(point, onSuccess, onFail, onError) {
+        this.updatePoint(point, onSuccess, onFail, onError, "POST")
+    }
+
+    deletePoint(point, onSuccess, onFail, onError) {
+        this.updatePoint(point, onSuccess, onFail, onError, "DELETE")
+    }
+
+    updatePoint(point, onSuccess, onFail = () => {}, onError = (error) => {}, type) {
+        fetch(HttpClient.FAVORITE + "?lat=" + point.lat + "&lng=" + point.lng, {method: type})
+            .then(function (response) {
+                if (response.status !== 200) {
+                    onFail();
+                    return;
+                }
+                onSuccess();
+            })
             .catch(function (error) {
                 onError(error);
             })
